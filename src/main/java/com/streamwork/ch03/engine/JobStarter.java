@@ -16,11 +16,11 @@ public class JobStarter {
   // The job to start
   private final Job job;
   // List of executors and stream managers
-  private final List<ComponentExecutor> executorList = new ArrayList<ComponentExecutor>();
-  private final List<EventDispatcher> dispatcherList = new ArrayList<EventDispatcher>();
+  private final List<ComponentExecutor> executorList = new ArrayList<>();
+  private final List<EventDispatcher> dispatcherList = new ArrayList<>();
 
   // Connections between component executors
-  private final List<Connection> connectionList = new ArrayList<Connection>();
+  private final List<Connection> connectionList = new ArrayList<>();
 
   public JobStarter(Job job) {
     this.job = job;

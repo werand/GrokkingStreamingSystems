@@ -10,7 +10,6 @@ import freemarker.template.Configuration;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.staticfiles.Location;
-import io.javalin.rendering.FileRenderer;
 import io.javalin.rendering.template.JavalinFreemarker;
 
 class WebServer {

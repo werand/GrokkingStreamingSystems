@@ -18,14 +18,14 @@ public class JobStarter {
   // The job to start
   private final Job job;
   // List of executors and stream managers
-  private final List<ComponentExecutor> executorList = new ArrayList<ComponentExecutor>();
-  private final List<EventDispatcher> dispatcherList = new ArrayList<EventDispatcher>();
+  private final List<ComponentExecutor> executorList = new ArrayList<>();
+  private final List<EventDispatcher> dispatcherList = new ArrayList<>();
 
   // Connections between component executors
   //private final Map<ComponentExecutor, List<OperatorExecutor>> connectionMap = new HashMap<ComponentExecutor, List<OperatorExecutor>>();
-  private final List<Connection> connectionList = new ArrayList<Connection>();
-  private final Map<Operator, OperatorExecutor> operatorMap = new HashMap<Operator, OperatorExecutor>();
-  private final Map<OperatorExecutor, EventQueue> operatorQueueMap = new HashMap<OperatorExecutor, EventQueue>();
+  private final List<Connection> connectionList = new ArrayList<>();
+  private final Map<Operator, OperatorExecutor> operatorMap = new HashMap<>();
+  private final Map<OperatorExecutor, EventQueue> operatorQueueMap = new HashMap<>();
 
   public JobStarter(Job job) {
     this.job = job;

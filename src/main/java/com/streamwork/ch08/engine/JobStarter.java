@@ -18,12 +18,12 @@ public class JobStarter {
   // The job to start
   private final Job job;
   // List of executors and stream managers
-  private final List<ComponentExecutor> executorList = new ArrayList<ComponentExecutor>();
-  private final List<EventDispatcher> dispatcherList = new ArrayList<EventDispatcher>();
+  private final List<ComponentExecutor> executorList = new ArrayList<>();
+  private final List<EventDispatcher> dispatcherList = new ArrayList<>();
 
   // Connections between component executors
-  private final List<Connection> connectionList = new ArrayList<Connection>();
-  private final Map<Operator, OperatorExecutor> operatorMap = new HashMap<Operator, OperatorExecutor>();
+  private final List<Connection> connectionList = new ArrayList<>();
+  private final Map<Operator, OperatorExecutor> operatorMap = new HashMap<>();
   // A map from Operator executor to the incoming event queue of the event distributor in front of the operator.
   // Note that there is one event dispatcher and incoming queue for each incoming stream.
   private final Map<OperatorExecutor, Map<String, EventQueue>> operatorQueueMap = new HashMap<>();
