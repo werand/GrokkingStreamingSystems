@@ -83,21 +83,21 @@ public class JobStarter {
     // executors of the downstream executor.
     // Note that in this version, there is no shared "from" component and "to" component.
     // The job looks like a single linked list.
-    EventDispatcher dispatcher = new EventDispatcher(connection.to);
+    EventDispatcher dispatcher = new EventDispatcher(connection.to());
     dispatcherList.add(dispatcher);
 
     // Connect to upstream.
     EventQueue upstream = new EventQueue(QUEUE_SIZE);
-    connection.from.setOutgoingQueue(upstream);
+    connection.from().setOutgoingQueue(upstream);
     dispatcher.setIncomingQueue(upstream);
 
     // Connect to downstream (to each instance).
-    int parallelism = connection.to.getComponent().getParallelism();
+    int parallelism = connection.to().getComponent().getParallelism();
     EventQueue [] downstream = new EventQueue[parallelism];
     for (int i = 0; i < parallelism; ++i) {
       downstream[i] = new EventQueue(QUEUE_SIZE);
     }
-    connection.to.setIncomingQueues(downstream);
+    connection.to().setIncomingQueues(downstream);
     dispatcher.setOutgoingQueues(downstream);
   }
 

@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.template.Configuration;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.rendering.FileRenderer;
+import io.javalin.rendering.template.JavalinFreemarker;
 
 class WebServer {
 
@@ -61,7 +65,12 @@ class WebServer {
   }
 
   public void start() {
-    Javalin app = Javalin.create(config -> config.addStaticFiles("/public", Location.CLASSPATH))
+    Configuration freemarkerCfg = new Configuration(Configuration.VERSION_2_3_31);
+    freemarkerCfg.setTemplateLoader(new ClassTemplateLoader(WebServer.class, "/"));
+    Javalin app = Javalin.create(config -> {
+      config.staticFiles.add("/public", Location.CLASSPATH);
+      config.fileRenderer(new JavalinFreemarker(freemarkerCfg));
+            })
       .start(7000);
 
     app.get("/", this::indexHandler);

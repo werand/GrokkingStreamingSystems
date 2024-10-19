@@ -75,8 +75,8 @@ public class JobStarter {
     // It is a newly connected operator executor. Note that in this version, there is no
     // shared "from" component and "to" component. The job looks like a single linked list.
     EventQueue intermediateQueue = new EventQueue(QUEUE_SIZE);
-    connection.from.setOutgoingQueue(intermediateQueue);
-    connection.to.setIncomingQueue(intermediateQueue);
+    connection.from().setOutgoingQueue(intermediateQueue);
+    connection.to().setIncomingQueue(intermediateQueue);
   }
 
   private void traverseComponent(Component component, ComponentExecutor executor) {

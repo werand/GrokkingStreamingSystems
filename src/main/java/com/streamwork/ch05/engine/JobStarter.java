@@ -88,26 +88,26 @@ public class JobStarter {
     // Each instance executor of the upstream executor connects to the all the stream managers
     // of the downstream executors first. And each stream manager connects to all the instance
     // executors of the downstream executor.
-    connection.from.registerChannel(connection.channel);
-    if (operatorQueueMap.containsKey(connection.to)) {
+    connection.from().registerChannel(connection.channel());
+    if (operatorQueueMap.containsKey(connection.to())) {
       // Existing operator. Connect to upstream only.
-      EventQueue dispatcherQueue = operatorQueueMap.get(connection.to);
-      connection.from.addOutgoingQueue(connection.channel, dispatcherQueue);
+      EventQueue dispatcherQueue = operatorQueueMap.get(connection.to());
+      connection.from().addOutgoingQueue(connection.channel(), dispatcherQueue);
     } else {
       // New operator. Create a dispatcher and connect to upstream first.
-      EventDispatcher dispatcher = new EventDispatcher(connection.to);
+      EventDispatcher dispatcher = new EventDispatcher(connection.to());
       EventQueue dispatcherQueue = new EventQueue(QUEUE_SIZE);
-      operatorQueueMap.put(connection.to, dispatcherQueue);
+      operatorQueueMap.put(connection.to(), dispatcherQueue);
       dispatcher.setIncomingQueue(dispatcherQueue);
-      connection.from.addOutgoingQueue(connection.channel, dispatcherQueue);
+      connection.from().addOutgoingQueue(connection.channel(), dispatcherQueue);
 
       // Connect to downstream (to each instance).
-      int parallelism = connection.to.getComponent().getParallelism();
+      int parallelism = connection.to().getComponent().getParallelism();
       EventQueue[] downstream = new EventQueue[parallelism];
       for (int i = 0; i < parallelism; ++i) {
         downstream[i] = new EventQueue(QUEUE_SIZE);
       }
-      connection.to.setIncomingQueues(downstream);
+      connection.to().setIncomingQueues(downstream);
       dispatcher.setOutgoingQueues(downstream);
 
       dispatcherList.add(dispatcher);
