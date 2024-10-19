@@ -7,6 +7,7 @@ import java.util.Map;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.staticfiles.Location;
 
 public class WebServer {
 
@@ -57,7 +58,7 @@ public class WebServer {
 
   public void start() {
     Javalin app = Javalin.create(config -> {
-        config.addStaticFiles("/public");
+        config.addStaticFiles("/public", Location.CLASSPATH);
       })
       .start(7000);
 
@@ -78,7 +79,7 @@ public class WebServer {
         to
       ));
     }
-    ctx.render("index.twig", Map.of("job", jobName, "graph", graph));
+    ctx.render("index.ftl", Map.of("job", jobName, "graph", graph));
   }
 
   private void planHandler(Context ctx) {
