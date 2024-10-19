@@ -18,14 +18,14 @@ public class JobStarter {
   // The job to start
   private final Job job;
   // List of executors and stream managers
-  private final List<ComponentExecutor> executorList = new ArrayList<ComponentExecutor>();
-  private final List<EventDispatcher> dispatcherList = new ArrayList<EventDispatcher>();
+  private final List<ComponentExecutor> executorList = new ArrayList<>();
+  private final List<EventDispatcher> dispatcherList = new ArrayList<>();
 
   // Connections between component executors
   //private final Map<ComponentExecutor, List<OperatorExecutor>> connectionMap = new HashMap<ComponentExecutor, List<OperatorExecutor>>();
-  private final List<Connection> connectionList = new ArrayList<Connection>();
-  private final Map<Operator, OperatorExecutor> operatorMap = new HashMap<Operator, OperatorExecutor>();
-  private final Map<OperatorExecutor, EventQueue> operatorQueueMap = new HashMap<OperatorExecutor, EventQueue>();
+  private final List<Connection> connectionList = new ArrayList<>();
+  private final Map<Operator, OperatorExecutor> operatorMap = new HashMap<>();
+  private final Map<OperatorExecutor, EventQueue> operatorQueueMap = new HashMap<>();
 
   public JobStarter(Job job) {
     this.job = job;
@@ -88,26 +88,26 @@ public class JobStarter {
     // Each instance executor of the upstream executor connects to the all the stream managers
     // of the downstream executors first. And each stream manager connects to all the instance
     // executors of the downstream executor.
-    connection.from.registerChannel(connection.channel);
-    if (operatorQueueMap.containsKey(connection.to)) {
+    connection.from().registerChannel(connection.channel());
+    if (operatorQueueMap.containsKey(connection.to())) {
       // Existing operator. Connect to upstream only.
-      EventQueue dispatcherQueue = operatorQueueMap.get(connection.to);
-      connection.from.addOutgoingQueue(connection.channel, dispatcherQueue);
+      EventQueue dispatcherQueue = operatorQueueMap.get(connection.to());
+      connection.from().addOutgoingQueue(connection.channel(), dispatcherQueue);
     } else {
       // New operator. Create a dispatcher and connect to upstream first.
-      EventDispatcher dispatcher = new EventDispatcher(connection.to);
+      EventDispatcher dispatcher = new EventDispatcher(connection.to());
       EventQueue dispatcherQueue = new EventQueue(QUEUE_SIZE);
-      operatorQueueMap.put(connection.to, dispatcherQueue);
+      operatorQueueMap.put(connection.to(), dispatcherQueue);
       dispatcher.setIncomingQueue(dispatcherQueue);
-      connection.from.addOutgoingQueue(connection.channel, dispatcherQueue);
+      connection.from().addOutgoingQueue(connection.channel(), dispatcherQueue);
 
       // Connect to downstream (to each instance).
-      int parallelism = connection.to.getComponent().getParallelism();
+      int parallelism = connection.to().getComponent().getParallelism();
       EventQueue[] downstream = new EventQueue[parallelism];
       for (int i = 0; i < parallelism; ++i) {
         downstream[i] = new EventQueue(QUEUE_SIZE);
       }
-      connection.to.setIncomingQueues(downstream);
+      connection.to().setIncomingQueues(downstream);
       dispatcher.setOutgoingQueues(downstream);
 
       dispatcherList.add(dispatcher);

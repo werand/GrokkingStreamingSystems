@@ -9,9 +9,9 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.staticfiles.Location;
 
-public class WebServer {
+class WebServer {
 
-  class Node extends HashMap<String, String> {
+  static class Node extends HashMap<String, String> {
     public Node(String name, int parallelism) {
       super();
 
@@ -20,7 +20,7 @@ public class WebServer {
     }
   }
 
-  class Edge extends HashMap<String, String> {
+  static class Edge extends HashMap<String, String> {
     public Edge(Node from, Node to, String stream) {
         super();
 
@@ -33,23 +33,23 @@ public class WebServer {
   }
 
   private final String jobName;
-  private final List<Node> sources = new ArrayList<Node>();
-  private final List<Node> operators = new ArrayList<Node>();
-  private final List<Edge> edges = new ArrayList<Edge>();
+  private final List<Node> sources = new ArrayList<>();
+  private final List<Node> operators = new ArrayList<>();
+  private final List<Edge> edges = new ArrayList<>();
 
   public WebServer(final String jobName, final List<Connection> connectionList) {
     this.jobName = jobName;
-    Map<Node, Integer> incomingCountMap = new HashMap<Node, Integer>();
+    Map<Node, Integer> incomingCountMap = new HashMap<>();
     for (Connection connection: connectionList) {
-      Node from = new Node(connection.from.getComponent().getName(), connection.from.getComponent().getParallelism());
-      Node to = new Node(connection.to.getComponent().getName(), connection.to.getComponent().getParallelism());
+      Node from = new Node(connection.from().getComponent().getName(), connection.from().getComponent().getParallelism());
+      Node to = new Node(connection.to().getComponent().getName(), connection.to().getComponent().getParallelism());
 
       Integer count = incomingCountMap.getOrDefault(to, 0);
       incomingCountMap.put(from, count);
       count = incomingCountMap.getOrDefault(to, 0);
       incomingCountMap.put(to, count + 1);
 
-      edges.add(new Edge(from, to, connection.channel));
+      edges.add(new Edge(from, to, connection.channel()));
     }
     for (Node node: incomingCountMap.keySet()) {
       if (incomingCountMap.get(node) == 0) {
@@ -61,13 +61,11 @@ public class WebServer {
   }
 
   public void start() {
-    Javalin app = Javalin.create(config -> {
-        config.addStaticFiles("/public", Location.CLASSPATH);
-      })
+    Javalin app = Javalin.create(config -> config.addStaticFiles("/public", Location.CLASSPATH))
       .start(7000);
 
-    app.get("/", ctx -> indexHandler(ctx));
-    app.get("/plan.json", ctx -> planHandler(ctx));
+    app.get("/", this::indexHandler);
+    app.get("/plan.json", this::planHandler);
   }
 
   private void indexHandler(Context ctx) {
@@ -90,7 +88,7 @@ public class WebServer {
   }
 
   private void planHandler(Context ctx) {
-    Map<String, Object> plan = new HashMap<String, Object>();
+    Map<String, Object> plan = new HashMap<>();
     plan.put("name", jobName);
     plan.put("sources", sources);
     plan.put("operators", operators);
